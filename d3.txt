@@ -1,1 +1,1 @@
-['Y2', 'R5', 'Y1', 'Y5', 'R3', 'Plus2_Y', 'B1', 'Plus2_G', 'R4', 'B5', 'Plus2_R', 'G4', 'Plus2_B', 'Plus2_R', 'G3', '', 'G2', 'Y4', '', 'Y3']
+['R5', 'G3', 'Plus2_R', 'Plus2_G', 'R3', 'B3', 'B2', 'R4', 'G2', 'B5', 'R1', 'Plus2_R', 'B1', 'B4', 'Y5', 'Plus2_Y', 'G5', 'Plus2_G']

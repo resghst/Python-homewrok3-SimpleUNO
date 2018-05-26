@@ -27,7 +27,7 @@ def recvcontrol():
 	global endgame, d1_card, d2_card, nowcard
 	reciver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	host = socket.gethostname()
-	port = 12345
+	port = 12346
 	reciver.bind((host, port)) 
 	reciver.listen(5)
 	while not endgame:
@@ -91,6 +91,9 @@ def useraction():
 			pick_card =  d3_card[0]
 			d3_card.remove(pick_card)
 			d1_card.append(pick_card)
+			d = open( 'c1.txt' , 'w+')
+			d.write(json.dumps(d1_card))
+			d.close()
 			d = open( 'd3.txt' , 'w+')
 			d.write(json.dumps(d3_card))
 			d.close()
