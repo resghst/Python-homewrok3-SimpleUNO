@@ -19,7 +19,7 @@ def send_card(message):
 	send = socket.socket()
 	host = socket.gethostname()
 	send.connect((host, 12344))
-	data = str(message) + '\n'
+	data = 'rec_card|c1\n' + str(message) 
 	send.send(data)
 	send.close()
 
@@ -77,6 +77,7 @@ def useraction():
 		elif inst == 'read': #read_current
 			print nowcard
 		elif inst == 'please': #recommend_card
+			print 'now' + nowcard
 			if(nowcard[0]=='P'): tcolor = nowcard[6]
 			else: tcolor = nowcard[0]
 			for i in d1_card:
@@ -86,11 +87,14 @@ def useraction():
 					print i
 					continue
 			d = open( 'd3.txt' , 'r+')
-			d3_card = d.read()
+			d3_card = json.loads(d.read())
 			d.close()
 			pick_card =  d3_card[0]
 			d3_card.remove(pick_card)
 			d1_card.append(pick_card)
+			d = open( 'c1.txt' , 'w+')
+			d.write(json.dumps(d1_card))
+			d.close()
 			d = open( 'd3.txt' , 'w+')
 			d.write(json.dumps(d3_card))
 			d.close()
@@ -99,7 +103,7 @@ def useraction():
 			send_card(card)
 			d1_card.remove(card)
 			d = open( 'c1.txt' , 'w+')
-			d.write(d1_card)
+			d.write(str(d1_card))
 			d.close()
 
 if __name__ == "__main__":

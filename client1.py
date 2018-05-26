@@ -19,7 +19,7 @@ def send_card(message):
 	send = socket.socket()
 	host = socket.gethostname()
 	send.connect((host, 12344))
-	data = str(message) + '\n'
+	data = 'rec_card|c1\n' + str(message) 
 	send.send(data)
 	send.close()
 
@@ -37,8 +37,8 @@ def recvcontrol():
 		if(data[0] == 'send_card'):
 			data = data[1]
 			data = data.split("\n")
-			d = open( 'c1.txt' , 'w+')
-			d.write(data[0])
+			d = open( 'c2.txt' , 'w+')
+			d.write(data[1])
 			d.close()
 			d1_card = json.loads(data[0])
 			d2_card = json.loads(data[1])
@@ -48,7 +48,7 @@ def recvcontrol():
 		elif(data[0] == 'read_current'):
 			data = data[1]
 			data = data.split("\n")
-			if(data[0]=='c2'):
+			if(data[0]=='c1'):
 				nowcard = data[1]
 				d = open( 'now.txt' , 'w+')
 				d.write(nowcard)
@@ -57,11 +57,10 @@ def recvcontrol():
 					card = ['B', 'G', 'R', 'Y']
 					for i in range(4):
 						if( nowcard[6] == card[i] ):
-							d1_card.extend([ card[i]+'1', card[i]+'2' ])
+							d2_card.extend([ card[i]+'1', card[i]+'2' ])
 							d = open( 'c1.txt' , 'w+')
 							d.write(json.dumps(d1_card))
 							d.close()
-
 	c.close()
 
 
@@ -70,29 +69,30 @@ def useraction():
 	while not endgame:
 		inst = raw_input('input The command:')
 		if inst == 'see': #see_mycard
-			print d1_card
+			print d2_card
 			d = open( 'c1.txt' , 'w+')
 			print d.read()
 			d.close()
 		elif inst == 'read': #read_current
 			print nowcard
 		elif inst == 'please': #recommend_card
+			print 'now' + nowcard
 			if(nowcard[0]=='P'): tcolor = nowcard[6]
 			else: tcolor = nowcard[0]
-			for i in d1_card:
+			for i in d2_card:
 				if(i[0]=='P'): mycolor = i[6]
 				else: mycolor = i[0]
 				if(mycolor == tcolor): 
 					print i
 					continue
 			d = open( 'd3.txt' , 'r+')
-			d3_card = d.read()
+			d3_card = json.loads(d.read())
 			d.close()
 			pick_card =  d3_card[0]
 			d3_card.remove(pick_card)
-			d1_card.append(pick_card)
+			d2_card.append(pick_card)
 			d = open( 'c1.txt' , 'w+')
-			d.write(json.dumps(d1_card))
+			d.write(json.dumps(d2_card))
 			d.close()
 			d = open( 'd3.txt' , 'w+')
 			d.write(json.dumps(d3_card))
@@ -100,9 +100,9 @@ def useraction():
 		elif inst == 'send': #send_card
 			card = raw_input('input The send card:')
 			send_card(card)
-			d1_card.remove(card)
+			d2_card.remove(card)
 			d = open( 'c1.txt' , 'w+')
-			d.write(d1_card)
+			d.write(str(d2_card))
 			d.close()
 
 if __name__ == "__main__":

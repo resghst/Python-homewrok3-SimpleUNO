@@ -84,7 +84,7 @@ def serveraction():
 			divpile[0], divpile[1], divpile[2] = div_card(pile, pile1, pile2, pile3)
 			for i in range(1,4):
 				d = open( 'd' + str(i) + '.txt' , 'w+')
-				d.write(str(divpile[i-1]))
+				d.write(json.dumps(divpile[i-1]))
 				d.close()
 			jspile1 = json.dumps(pile1)
 			jspile2 = json.dumps(pile2)
@@ -96,7 +96,7 @@ def serveraction():
 			ready+=1
 		elif(inst=='r'): #rec_card
 			global inaction, beforecard
-			data = inaction.split(",")
+			data = inaction.split("\n")
 			member = data[0]
 			card = data[1]
 			beforecard = card
@@ -118,7 +118,8 @@ def getdata():
 		if(ready == 3):
 			c, addr = reciver.accept()
 			data = c.recv(1024)
-			inaction = data
+			data = data.split("|")
+			if(data[0] == 'rec_card'):inaction = data[1]
 	c.close()
 
 
