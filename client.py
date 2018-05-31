@@ -1,8 +1,8 @@
 import socket, threading, time, json
-endgame = False
+endgame = 0
 d1_card, d2_card, d3_card = [], [], []
 nowcard = ''
-
+currentdata = ''
 def reflashnow(action):
 	global nowcard
 	if(action == 'r'):
@@ -24,7 +24,7 @@ def send_card(message):
 	send.close()
 
 def recvcontrol():
-	global endgame, d1_card, d2_card, nowcard
+	global endgame, d1_card, d2_card, nowcard, currentdata
 	reciver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	host = socket.gethostname()
 	port = 12345
@@ -42,7 +42,7 @@ def recvcontrol():
 			d.close()
 			d1_card = json.loads(data[0])
 			d2_card = json.loads(data[1])
-			print str(d1_card) + "\n" +str(d2_card)
+			# print str(d1_card) + "\n" +str(d2_card)
 		elif(data[0] == 'rec_card'):
 			data = data[1]
 		elif(data[0] == 'read_current'):
@@ -53,21 +53,13 @@ def recvcontrol():
 				d = open( 'now.txt' , 'w+')
 				d.write(nowcard)
 				d.close()
-				if(nowcard[0]=='P'):
-					card = ['B', 'G', 'R', 'Y']
-					for i in range(4):
-						if( nowcard[6] == card[i] ):
-							d1_card.extend([ card[i]+'1', card[i]+'2' ])
-							d = open( 'c1.txt' , 'w+')
-							d.write(json.dumps(d1_card))
-							d.close()
 
 	c.close()
 
 
 def useraction():
 	global endgame, d1_card, d2_card, d3_card, nowcard
-	while not endgame:
+	while endgame==0:
 		inst = raw_input('input The command:')
 		if inst == 'see': #see_mycard
 			print d1_card
@@ -75,6 +67,14 @@ def useraction():
 			print d.read()
 			d.close()
 		elif inst == 'read': #read_current
+			if(nowcard[0]=='P'):
+				card = ['B', 'G', 'R', 'Y']
+				for i in range(4):
+					if( nowcard[6] == card[i] ):
+						d1_card.extend([ card[i]+'1', card[i]+'2' ])
+						d = open( 'c1.txt' , 'w+')
+						d.write(json.dumps(d1_card))
+						d.close()
 			print nowcard
 		elif inst == 'please': #recommend_card
 			print 'now' + nowcard
@@ -89,7 +89,8 @@ def useraction():
 			d = open( 'd3.txt' , 'r+')
 			d3_card = json.loads(d.read())
 			d.close()
-			pick_card =  d3_card[0]
+			if not d3_card: endgame=2
+			pick_card = d3_card[0]
 			d3_card.remove(pick_card)
 			d1_card.append(pick_card)
 			d = open( 'c1.txt' , 'w+')
@@ -105,6 +106,7 @@ def useraction():
 			d = open( 'c1.txt' , 'w+')
 			d.write(str(d1_card))
 			d.close()
+		if not d1_card: endgame=1
 
 if __name__ == "__main__":
 	thread1 = threading.Thread(target = recvcontrol)
@@ -113,4 +115,7 @@ if __name__ == "__main__":
 	thread2.start()
 	thread1.join()
 	thread2.join()
+	if(endgame==1): print 'win'
+	elif(endgame==2): print 'tie'
 	print('end join')  
+ 
